@@ -1,0 +1,51 @@
+<div id="setup-view">
+  <h2>Setup</h2>
+
+  <!-- Printer -->
+  <div class="setup-section">
+    <h3>Printer</h3>
+    <div class="field-group">
+      <label for="printer-select">Installed Printers</label>
+      <select id="printer-select">
+        <option value="">Loading printers…</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Logo -->
+  <div class="setup-section">
+    <h3>Logo</h3>
+    <div class="field-group">
+      <label>Logo File (PNG)</label>
+      <div class="browse-row">
+        <input type="text" id="logo-path" placeholder="Path to logo PNG (or UNC path)" />
+        <button class="btn-secondary" id="btn-browse-logo" style="white-space:nowrap;">Browse…</button>
+      </div>
+      <div class="logo-error" id="logo-error"></div>
+      <div class="logo-preview-wrapper">
+        <img class="logo-preview-img" id="logo-preview" style="display:none;" alt="Logo preview" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Label size -->
+  <div class="setup-section">
+    <h3>Label Size</h3>
+    <p style="font-size:14px;color:#555;">4 × 6 inches (fixed)</p>
+  </div>
+
+  <!-- Test print -->
+  <div class="setup-section">
+    <h3>Test Print</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:12px;">
+      Prints a sample Part label and Customer label to the selected printer to verify alignment and layout.
+    </p>
+    <button class="btn-secondary" id="btn-test-print">Test Print</button>
+  </div>
+
+  <!-- Save -->
+  <div style="display:flex;align-items:center;gap:16px;">
+    <button class="btn-primary" id="btn-save-settings">Save Settings</button>
+    <span class="settings-saved" id="settings-saved"></span>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div id="import-view">
+  <h2>Import Parts</h2>
+
+  <p style="color:#555;font-size:13px;margin-bottom:20px;">
+    Import a QuickBooks-exported Excel file (<code>.xlsx</code>) to update the parts database.
+  </p>
+
+  <div style="margin-bottom:16px;">
+    <button class="btn-primary" id="btn-browse-import">Browse for Excel File…</button>
+  </div>
+
+  <div class="import-status" id="import-status"></div>
+
+  <div id="warning-banner" class="warning-banner" style="display:none;">
+    ⚠ This will replace ALL existing part data. This cannot be undone.
+  </div>
+
+  <div id="preview-section" style="display:none;">
+    <h3>Preview (first 10 rows)</h3>
+    <div class="preview-table-wrapper">
+      <table class="preview-table">
+        <thead>
+          <tr>
+            <th>Part Number</th>
+            <th>Description</th>
+            <th>Bin Location</th>
+          </tr>
+        </thead>
+        <tbody id="preview-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="confirm-row" id="confirm-row" style="display:none;">
+    <input type="checkbox" id="confirm-checkbox" />
+    <label for="confirm-checkbox" style="text-transform:none;font-size:13px;font-weight:400;color:#333;margin:0;">
+      I understand this will replace all existing parts
+    </label>
+  </div>
+
+  <button class="btn-danger" id="btn-confirm-import" disabled style="display:block;">Confirm Import</button>
+</div>
+
+<script src="../node_modules/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+  // Show preview section when rows are detected
+  document.addEventListener('importPreviewReady', () => {
+    document.getElementById('preview-section').style.display = '';
+  });
+</script>

@@ -1,0 +1,87 @@
+<div id="print-view">
+  <div class="print-form">
+    <h2>Print Labels</h2>
+
+    <!-- Search -->
+    <div class="field-group">
+      <label for="part-search">Search Parts</label>
+      <div class="search-wrapper">
+        <input type="text" id="part-search" placeholder="Part number, description, or bin…" autocomplete="off" />
+        <div id="search-dropdown"></div>
+      </div>
+    </div>
+
+    <!-- Read-only part fields -->
+    <div class="field-group">
+      <label>Part Number</label>
+      <input type="text" id="field-part-number" readonly />
+    </div>
+    <div class="field-group">
+      <label>Category</label>
+      <input type="text" id="field-category" readonly />
+    </div>
+    <div class="field-group">
+      <label>Description</label>
+      <input type="text" id="field-description" readonly />
+    </div>
+    <div class="field-group">
+      <label>Bin Location</label>
+      <input type="text" id="field-bin-location" readonly />
+    </div>
+
+    <!-- Qty/count row -->
+    <div class="fields-row">
+      <div class="field-group">
+        <label for="qty-per-label">Qty per Label</label>
+        <input type="number" id="qty-per-label" min="1" placeholder="e.g. 150" />
+      </div>
+      <div class="field-group">
+        <label for="label-count">Label Count</label>
+        <input type="number" id="label-count" value="2" min="1" />
+      </div>
+      <div class="field-group">
+        <label for="container-count">Container Count</label>
+        <input type="number" id="container-count" value="1" min="1" />
+      </div>
+    </div>
+
+    <!-- Customer / PO -->
+    <div class="field-group">
+      <label for="customer">Customer</label>
+      <input type="text" id="customer" placeholder="Optional — adds a Customer label per container" />
+    </div>
+    <div class="field-group">
+      <label for="po-job">PO / Job Name</label>
+      <input type="text" id="po-job" placeholder="Optional" />
+    </div>
+
+    <!-- Summary + actions -->
+    <div class="job-summary" id="job-summary">Select a part and enter qty to begin.</div>
+    <div class="print-actions">
+      <button class="btn-primary" id="btn-print" disabled>Print</button>
+      <button class="btn-secondary" id="btn-clear">Clear</button>
+    </div>
+  </div>
+
+  <!-- Preview panel -->
+  <div class="preview-panel">
+    <h3>Label Preview</h3>
+    <div id="preview-placeholder" class="preview-placeholder">Select a part to preview</div>
+    <div id="preview-labels" class="preview-labels" style="display:none">
+      <div class="preview-label-wrapper">
+        <div class="preview-label-title">Part Label</div>
+        <div class="label-iframe-container" id="part-label-preview" style="width:200px;height:300px;">
+          <iframe width="384" height="576" style="transform:scale(0.521);transform-origin:0 0;border:none;"></iframe>
+        </div>
+      </div>
+      <div class="preview-label-wrapper" id="customer-label-wrapper" style="display:none">
+        <div class="preview-label-title">Customer Label</div>
+        <div class="label-iframe-container" id="customer-label-preview" style="width:200px;height:300px;">
+          <iframe width="384" height="576" style="transform:scale(0.521);transform-origin:0 0;border:none;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../node_modules/fuse.js/dist/fuse.min.js"></script>

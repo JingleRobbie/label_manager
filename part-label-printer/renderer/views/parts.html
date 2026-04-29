@@ -1,0 +1,27 @@
+<div id="parts-view">
+  <div class="parts-list-panel">
+    <h2>Parts</h2>
+    <div class="parts-search-row">
+      <input type="text" id="parts-search" placeholder="Search by part number, description, or bin…" style="max-width:360px;" />
+      <span class="parts-count" id="parts-count"></span>
+    </div>
+    <div class="parts-table-wrapper">
+      <table class="parts-table">
+        <thead>
+          <tr>
+            <th data-sort="part_number">Part Number<span class="sort-arrow"> ↑</span></th>
+            <th data-sort="description">Description<span class="sort-arrow"></span></th>
+            <th data-sort="bin_location">Bin Location<span class="sort-arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="parts-tbody">
+          <tr><td colspan="3" class="no-parts-message">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="part-detail-panel" id="part-detail-panel">
+    <div class="detail-placeholder">Click a part to view details</div>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+{
+  "name": "part-label-printer",
+  "version": "1.0.0",
+  "description": "Part Label Printer — thermal label printing for parts",
+  "main": "main.js",
+  "scripts": {
+    "start": "env -u ELECTRON_RUN_AS_NODE electron .",
+    "build": "electron-builder --win"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "fuse.js": "^7.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.4",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.yourcompany.part-label-printer",
+    "productName": "Part Label Printer",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "db/**/*",
+      "label/**/*",
+      "node_modules/**/*"
+    ]
+  }
+}

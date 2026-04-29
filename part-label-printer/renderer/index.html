@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part Label Printer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <nav id="sidebar">
+      <div id="app-title">Part Label Printer</div>
+      <ul id="nav-list">
+        <li class="nav-item active" data-view="print">Print</li>
+        <li class="nav-item" data-view="parts">Parts</li>
+        <li class="nav-item" data-view="import">Import</li>
+        <li class="nav-item" data-view="setup">Setup</li>
+      </ul>
+    </nav>
+    <main id="view-container">
+      <div class="loading-placeholder">Loading...</div>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
