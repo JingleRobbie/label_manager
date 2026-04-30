@@ -1,96 +1,115 @@
+const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
 let db;
+
+const DATA_FILE = 'parts-label.json';
+const DEFAULT_SETTINGS = {
+  printer_name: 'POLONO PL60 - FOR REALS on Ne01:',
+  label_width_in: '4',
+  label_height_in: '3',
+  logo_path: '',
+  last_import_date: ''
+};
 
 function getDb() {
   if (!db) throw new Error('Database not initialised');
   return db;
 }
 
+function loadStorage(filePath) {
+  try {
+    const raw = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(raw);
+  } catch (error) {
+    return null;
+  }
+}
+
+function saveStorage(filePath, data) {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+}
+
 function initDatabase() {
-  const Database = require('better-sqlite3');
-  const dbPath = path.join(app.getPath('userData'), 'parts-label.db');
-  db = new Database(dbPath);
+  const dataPath = path.join(app.getPath('userData'), DATA_FILE);
+  const existing = loadStorage(dataPath);
 
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS parts (
-      id           INTEGER PRIMARY KEY AUTOINCREMENT,
-      part_number  TEXT NOT NULL,
-      description  TEXT,
-      category     TEXT,
-      bin_location TEXT,
-      updated_at   TEXT
-    );
-    CREATE TABLE IF NOT EXISTS settings (
-      key   TEXT PRIMARY KEY,
-      value TEXT
-    );
-  `);
+  db = {
+    parts: [],
+    settings: { ...DEFAULT_SETTINGS },
+    nextId: 1,
+    dataPath
+  };
 
-  const defaults = [
-    ['printer_name', 'POLONO PL60 - FOR REALS on Ne01:'],
-    ['label_width_in', '4'],
-    ['label_height_in', '6'],
-    ['logo_path', ''],
-    ['last_import_date', '']
-  ];
-  const insertDefault = db.prepare(
-    'INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)'
-  );
-  for (const [key, value] of defaults) {
-    insertDefault.run(key, value);
+  if (existing && typeof existing === 'object') {
+    if (Array.isArray(existing.parts)) db.parts = existing.parts;
+    if (existing.settings && typeof existing.settings === 'object') {
+      db.settings = { ...db.settings, ...existing.settings };
+    }
+    if (typeof existing.nextId === 'number' && existing.nextId > 1) {
+      db.nextId = existing.nextId;
+    } else {
+      const maxId = db.parts.reduce((max, part) => Math.max(max, part.id || 0), 0);
+      db.nextId = maxId + 1;
+    }
   }
 
+  saveStorage(dataPath, db);
   return db;
 }
 
+function persist() {
+  const { dataPath, parts, settings, nextId } = getDb();
+  saveStorage(dataPath, { parts, settings, nextId });
+}
+
 function getAllParts() {
-  return getDb().prepare('SELECT * FROM parts ORDER BY part_number').all();
+  return [...getDb().parts].sort((a, b) => {
+    const av = String(a.part_number || '').toLowerCase();
+    const bv = String(b.part_number || '').toLowerCase();
+    return av < bv ? -1 : av > bv ? 1 : 0;
+  });
 }
 
 function getPart(id) {
-  return getDb().prepare('SELECT * FROM parts WHERE id = ?').get(id);
+  return getDb().parts.find(part => part.id === id) || null;
 }
 
 function updateDescription(id, description, updatedAt) {
-  getDb()
-    .prepare('UPDATE parts SET description = ?, updated_at = ? WHERE id = ?')
-    .run(description, updatedAt, id);
+  const part = getDb().parts.find(p => p.id === id);
+  if (!part) return;
+  part.description = description;
+  part.updated_at = updatedAt;
+  persist();
 }
 
 function importParts(parts) {
-  const d = getDb();
-  const transaction = d.transaction(() => {
-    d.prepare('DELETE FROM parts').run();
-    const insert = d.prepare(
-      'INSERT INTO parts (part_number, description, category, bin_location, updated_at) VALUES (?, ?, ?, ?, ?)'
-    );
-    for (const p of parts) {
-      insert.run(p.part_number, p.description, p.category, p.bin_location, p.updated_at);
-    }
-  });
-  transaction();
-  return parts.length;
+  const dbRef = getDb();
+  dbRef.parts = parts.map((p, index) => ({
+    id: dbRef.nextId + index,
+    part_number: p.part_number,
+    description: p.description,
+    category: p.category,
+    bin_location: p.bin_location,
+    updated_at: p.updated_at
+  }));
+  dbRef.nextId += dbRef.parts.length;
+  dbRef.settings.last_import_date = new Date().toISOString();
+  persist();
+  return dbRef.parts.length;
 }
 
 function getSetting(key) {
-  const row = getDb().prepare('SELECT value FROM settings WHERE key = ?').get(key);
-  return row ? row.value : null;
+  return getDb().settings[key] ?? null;
 }
 
 function setSetting(key, value) {
-  getDb()
-    .prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)')
-    .run(key, value);
+  getDb().settings[key] = value;
+  persist();
 }
 
 function getAllSettings() {
-  const rows = getDb().prepare('SELECT key, value FROM settings').all();
-  const result = {};
-  for (const row of rows) {
-    result[row.key] = row.value;
-  }
-  return result;
+  return { ...getDb().settings };
 }
 
 module.exports = {

@@ -65,7 +65,10 @@ function registerIpcHandlers() {
           {
             silent: true,
             deviceName: printerName,
-            pageSize: { width: 152400, height: 101600 }
+            pageSize: { width: 101600, height: 76200 },
+            landscape: true,
+            printBackground: true,
+            margins: { marginType: 'none' }
           },
           (success, errorType) => {
             win.close();

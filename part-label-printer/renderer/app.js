@@ -738,10 +738,10 @@ function buildPartLabelHTML(partData, logoBase64) {
 <head>
 <meta charset="UTF-8">
 <style>
-  @page { size: 6in 4in; margin: 0; }
+  @page { size: 4in 3in landscape; margin: 0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    width: 6in; height: 4in;
+    width: 4in; height: 3in;
     font-family: Arial, sans-serif;
     overflow: hidden;
     display: flex;
@@ -774,7 +774,7 @@ function buildPartLabelHTML(partData, logoBase64) {
     justify-content: center;
   }
   .description {
-    font-size: 24pt;
+    font-size: 28pt;
     line-height: 1.3;
     text-align: center;
     width: 100%;
@@ -799,7 +799,7 @@ function buildPartLabelHTML(partData, logoBase64) {
     (function() {
       const desc = document.getElementById('desc');
       const container = desc.parentElement;
-      let size = 24;
+      let size = 28;
       while (desc.scrollHeight > container.clientHeight && size > 8) {
         size -= 0.5;
         desc.style.fontSize = size + 'pt';
@@ -825,10 +825,10 @@ function buildCustomerLabelHTML(customerData, partData, logoBase64) {
 <head>
 <meta charset="UTF-8">
 <style>
-  @page { size: 6in 4in; margin: 0; }
+  @page { size: 4in 3in landscape; margin: 0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    width: 6in; height: 4in;
+    width: 4in; height: 3in;
     font-family: Arial, sans-serif;
     overflow: hidden;
     display: flex;

@@ -4,11 +4,10 @@
   "description": "Part Label Printer — thermal label printing for parts",
   "main": "main.js",
   "scripts": {
-    "start": "env -u ELECTRON_RUN_AS_NODE electron .",
+    "start": "electron .",
     "build": "electron-builder --win"
   },
   "dependencies": {
-    "better-sqlite3": "^9.4.3",
     "fuse.js": "^6.6.2",
     "xlsx": "^0.18.5"
   },
