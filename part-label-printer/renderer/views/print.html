@@ -17,16 +17,8 @@
       <input type="text" id="field-part-number" readonly />
     </div>
     <div class="field-group">
-      <label>Category</label>
-      <input type="text" id="field-category" readonly />
-    </div>
-    <div class="field-group">
       <label>Description</label>
       <input type="text" id="field-description" readonly />
-    </div>
-    <div class="field-group">
-      <label>Bin Location</label>
-      <input type="text" id="field-bin-location" readonly />
     </div>
 
     <!-- Qty/count row -->
@@ -40,7 +32,7 @@
         <input type="number" id="label-count" value="2" min="1" />
       </div>
       <div class="field-group">
-        <label for="container-count">Container Count</label>
+        <label for="container-count">Sets</label>
         <input type="number" id="container-count" value="1" min="1" />
       </div>
     </div>
@@ -70,18 +62,17 @@
     <div id="preview-labels" class="preview-labels" style="display:none">
       <div class="preview-label-wrapper">
         <div class="preview-label-title">Part Label</div>
-        <div class="label-iframe-container" id="part-label-preview" style="width:200px;height:300px;">
-          <iframe width="384" height="576" style="transform:scale(0.521);transform-origin:0 0;border:none;"></iframe>
+        <div class="label-iframe-container" id="part-label-preview" style="width:280px;height:187px;">
+          <iframe width="576" height="384" style="transform:scale(0.486);transform-origin:0 0;border:none;"></iframe>
         </div>
       </div>
       <div class="preview-label-wrapper" id="customer-label-wrapper" style="display:none">
         <div class="preview-label-title">Customer Label</div>
-        <div class="label-iframe-container" id="customer-label-preview" style="width:200px;height:300px;">
-          <iframe width="384" height="576" style="transform:scale(0.521);transform-origin:0 0;border:none;"></iframe>
+        <div class="label-iframe-container" id="customer-label-preview" style="width:280px;height:187px;">
+          <iframe width="576" height="384" style="transform:scale(0.486);transform-origin:0 0;border:none;"></iframe>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<script src="../node_modules/fuse.js/dist/fuse.min.js"></script>

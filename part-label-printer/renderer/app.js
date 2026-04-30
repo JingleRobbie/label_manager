@@ -23,7 +23,7 @@ async function rebuildSearchIndex() {
   if (typeof Fuse !== 'undefined') {
     fuse = new Fuse(partsArray, {
       keys: ['part_number', 'description', 'bin_location'],
-      threshold: 0.35,
+      threshold: 0.25,
       minMatchCharLength: 2,
       includeScore: true
     });
@@ -64,6 +64,7 @@ function initPrintView() {
   const labelCountInput = document.getElementById('label-count');
   const containerCountInput = document.getElementById('container-count');
   const customerInput = document.getElementById('customer');
+  const poJobInput = document.getElementById('po-job');
 
   if (!searchInput) return;
 
@@ -84,8 +85,8 @@ function initPrintView() {
     if (e.key === 'Escape') closeDropdown();
   });
 
-  [qtyInput, labelCountInput, containerCountInput, customerInput].forEach(el => {
-    if (el) el.addEventListener('input', () => { updateSummary(); updatePrintBtn(); });
+  [qtyInput, labelCountInput, containerCountInput, customerInput, poJobInput].forEach(el => {
+    if (el) el.addEventListener('input', () => { updateSummary(); updatePrintBtn(); updateLabelPreview(); });
   });
 
   if (clearBtn) clearBtn.addEventListener('click', resetPrintFields);
@@ -168,9 +169,9 @@ function updateSummary() {
 
   const totalPart = labelCount * containerCount;
   if (customer) {
-    summaryEl.textContent = `${totalPart} Part labels + ${containerCount} Customer label${containerCount !== 1 ? 's' : ''} across ${containerCount} container${containerCount !== 1 ? 's' : ''}`;
+    summaryEl.textContent = `${totalPart} Part labels + ${containerCount} Customer label${containerCount !== 1 ? 's' : ''} across ${containerCount} set${containerCount !== 1 ? 's' : ''}`;
   } else {
-    summaryEl.textContent = `${totalPart} Part label${totalPart !== 1 ? 's' : ''} across ${containerCount} container${containerCount !== 1 ? 's' : ''}`;
+    summaryEl.textContent = `${totalPart} Part label${totalPart !== 1 ? 's' : ''} across ${containerCount} set${containerCount !== 1 ? 's' : ''}`;
   }
 }
 
@@ -195,7 +196,7 @@ function resetPrintFields() {
   updateLabelPreview();
 }
 
-function updateLabelPreview() {
+async function updateLabelPreview() {
   const partPreviewContainer = document.getElementById('part-label-preview');
   const custPreviewContainer = document.getElementById('customer-label-preview');
   const placeholder = document.getElementById('preview-placeholder');
@@ -223,9 +224,15 @@ function updateLabelPreview() {
     qty_per_label: qty
   };
 
+  let logoBase64 = '';
+  try {
+    const logoPath = await window.api.db.getSetting('logo_path');
+    if (logoPath) logoBase64 = await window.api.fs.readFileBase64(logoPath);
+  } catch (_) {}
+
   const partIframe = partPreviewContainer.querySelector('iframe');
   if (partIframe) {
-    partIframe.srcdoc = buildPartLabelHTML(partData, '');
+    partIframe.srcdoc = buildPartLabelHTML(partData, logoBase64);
   }
 
   const custWrapper = document.getElementById('customer-label-wrapper');
@@ -234,7 +241,7 @@ function updateLabelPreview() {
       custWrapper.style.display = '';
       const custIframe = custPreviewContainer.querySelector('iframe');
       if (custIframe) {
-        custIframe.srcdoc = buildCustomerLabelHTML({ customer, po_job: poJob }, partData, '');
+        custIframe.srcdoc = buildCustomerLabelHTML({ customer, po_job: poJob }, partData, logoBase64);
       }
     } else {
       custWrapper.style.display = 'none';
@@ -725,91 +732,82 @@ async function loadLogoPreview(path, previewEl, errorEl) {
 // ── Label builders ────────────────────────────────────────────
 function buildPartLabelHTML(partData, logoBase64) {
   const logoSrc = logoBase64 ? `data:image/png;base64,${logoBase64}` : '';
-  const showBin = partData.bin_location && partData.bin_location.trim() !== '';
 
   return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <style>
-  @page { size: 4in 6in; margin: 0; }
+  @page { size: 6in 4in; margin: 0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    width: 4in; height: 6in;
+    width: 6in; height: 4in;
     font-family: Arial, sans-serif;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.1in 0.15in;
+    padding: 0.15in;
   }
-  .logo-wrapper { width: 100%; flex-shrink: 0; margin-bottom: 4pt; }
+  .logo-wrapper {
+    width: 75%;
+    flex-shrink: 0;
+    margin-bottom: 0.14in;
+  }
   .logo-wrapper img { width: 100%; height: auto; display: block; }
   .part-number {
-    font-size: 48pt;
+    font-size: 28pt;
     font-weight: bold;
-    text-align: center;
     text-transform: uppercase;
     line-height: 1.1;
-    width: 100%;
     flex-shrink: 0;
-    white-space: nowrap;
-    overflow: hidden;
+    text-align: center;
+    width: 75%;
+    margin-bottom: 0.14in;
   }
   .desc-container {
     flex: 1;
-    width: 100%;
+    width: 75%;
     overflow: hidden;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 4pt 0;
   }
   .description {
-    font-size: 18pt;
-    text-align: center;
+    font-size: 24pt;
     line-height: 1.3;
+    text-align: center;
     width: 100%;
   }
-  .bin-row {
-    font-size: 14pt;
-    font-weight: bold;
-    text-align: center;
-    flex-shrink: 0;
-    padding: 2pt 0;
-    ${showBin ? '' : 'display: none;'}
-  }
   .qty-row {
-    font-size: 14pt;
+    font-size: 28pt;
     font-weight: bold;
-    text-align: center;
     flex-shrink: 0;
-    padding: 2pt 0;
+    text-align: center;
+    margin-top: 0.06in;
   }
 </style>
 </head>
 <body>
   ${logoSrc ? `<div class="logo-wrapper"><img src="${logoSrc}" /></div>` : ''}
-  <div class="part-number">${escapeHtmlStr(partData.part_number)}</div>
+  <div class="part-number" id="pn">${escapeHtmlStr(partData.part_number)}</div>
   <div class="desc-container">
     <div class="description" id="desc">${escapeHtmlStr(partData.description)}</div>
   </div>
-  ${showBin ? `<div class="bin-row">BIN: ${escapeHtmlStr(partData.bin_location)}</div>` : ''}
   <div class="qty-row">QTY: ${escapeHtmlStr(String(partData.qty_per_label))}</div>
   <script>
     (function() {
       const desc = document.getElementById('desc');
       const container = desc.parentElement;
-      let size = 18;
+      let size = 24;
       while (desc.scrollHeight > container.clientHeight && size > 8) {
         size -= 0.5;
         desc.style.fontSize = size + 'pt';
       }
-      // Fit part number on one line
-      const pn = document.querySelector('.part-number');
-      let pnSize = 48;
-      while (pn.scrollWidth > pn.clientWidth && pnSize > 16) {
-        pnSize -= 1;
+      const pn = document.getElementById('pn');
+      let pnSize = 28;
+      while (pn.scrollWidth > pn.parentElement.clientWidth && pnSize > 10) {
+        pnSize -= 0.5;
         pn.style.fontSize = pnSize + 'pt';
       }
     })();
@@ -827,80 +825,60 @@ function buildCustomerLabelHTML(customerData, partData, logoBase64) {
 <head>
 <meta charset="UTF-8">
 <style>
-  @page { size: 4in 6in; margin: 0; }
+  @page { size: 6in 4in; margin: 0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    width: 4in; height: 6in;
+    width: 6in; height: 4in;
     font-family: Arial, sans-serif;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.1in 0.15in;
+    padding: 0.15in;
   }
-  .logo-wrapper { width: 100%; flex-shrink: 0; margin-bottom: 4pt; }
+  .logo-wrapper {
+    width: 75%;
+    flex-shrink: 0;
+    margin-bottom: 0.14in;
+  }
   .logo-wrapper img { width: 100%; height: auto; display: block; }
-  .customer-name-container {
-    flex: 1;
-    width: 100%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-height: 1.6in;
-  }
   .customer-name {
     font-size: 36pt;
     font-weight: bold;
     text-align: center;
     line-height: 1.2;
-    width: 100%;
+    width: 75%;
+    flex-shrink: 0;
   }
-  .po-container {
-    flex: 1;
-    width: 100%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-height: 1.6in;
-    ${showPo ? '' : 'display: none !important;'}
-  }
+  .spacer { flex: 1; }
   .po-name {
     font-size: 28pt;
     text-align: center;
     line-height: 1.2;
-    width: 100%;
-  }
-  .part-ref {
-    font-size: 11pt;
-    color: #666666;
-    text-align: center;
+    width: 75%;
     flex-shrink: 0;
-    padding: 4pt 0;
+    ${showPo ? '' : 'display: none;'}
   }
 </style>
 </head>
 <body>
   ${logoSrc ? `<div class="logo-wrapper"><img src="${logoSrc}" /></div>` : ''}
-  <div class="customer-name-container">
-    <div class="customer-name" id="cust-name">${escapeHtmlStr(customerData.customer)}</div>
-  </div>
-  ${showPo ? `<div class="po-container"><div class="po-name" id="po-name">${escapeHtmlStr(customerData.po_job)}</div></div>` : ''}
-  <div class="part-ref">PN: ${escapeHtmlStr(partData.part_number)}</div>
+  <div class="customer-name" id="cust-name">${escapeHtmlStr(customerData.customer)}</div>
+  <div class="spacer"></div>
+  ${showPo ? `<div class="po-name" id="po-name">${escapeHtmlStr(customerData.po_job)}</div>` : ''}
   <script>
     (function() {
-      function fitText(el, container, startSize) {
+      function fitText(el, startSize) {
         let size = startSize;
-        while (el.scrollHeight > container.clientHeight && size > 8) {
+        while ((el.scrollHeight > el.parentElement.clientHeight || el.scrollWidth > el.clientWidth) && size > 8) {
           size -= 0.5;
           el.style.fontSize = size + 'pt';
         }
       }
       const custEl = document.getElementById('cust-name');
-      if (custEl) fitText(custEl, custEl.parentElement, 36);
+      if (custEl) fitText(custEl, 36);
       const poEl = document.getElementById('po-name');
-      if (poEl) fitText(poEl, poEl.parentElement, 28);
+      if (poEl) fitText(poEl, 28);
     })();
   <\/script>
 </body>

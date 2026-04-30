@@ -65,7 +65,7 @@ function registerIpcHandlers() {
           {
             silent: true,
             deviceName: printerName,
-            pageSize: { width: 101600, height: 152400 }
+            pageSize: { width: 152400, height: 101600 }
           },
           (success, errorType) => {
             win.close();
