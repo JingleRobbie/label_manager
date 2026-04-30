@@ -485,7 +485,7 @@ button {
 .parts-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .parts-table th {
@@ -495,7 +495,7 @@ button {
   font-weight: 600;
   color: #1F3864;
   border-bottom: 2px solid #ddd;
-  font-size: 12px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   position: sticky;
