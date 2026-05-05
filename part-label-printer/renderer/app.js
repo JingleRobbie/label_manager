@@ -316,7 +316,7 @@ async function executePrintJob() {
   if (printBtn) {
     printBtn.textContent = '✓ Printed';
     setTimeout(() => {
-      resetPrintFields();
+      //resetPrintFields();
       if (printBtn) printBtn.textContent = 'Print';
     }, 1500);
   } else {
@@ -750,7 +750,7 @@ function buildPartLabelHTML(partData, logoBase64) {
     padding: 0.15in;
   }
   .logo-wrapper {
-    width: 75%;
+    width: 100%
     flex-shrink: 0;
     margin-bottom: 0.14in;
   }
@@ -762,12 +762,12 @@ function buildPartLabelHTML(partData, logoBase64) {
     line-height: 1.1;
     flex-shrink: 0;
     text-align: center;
-    width: 75%;
+    width: 100%
     margin-bottom: 0.14in;
   }
   .desc-container {
     flex: 1;
-    width: 75%;
+    width: 100%
     overflow: hidden;
     display: flex;
     align-items: flex-start;

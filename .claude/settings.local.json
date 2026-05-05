@@ -39,7 +39,16 @@
       "Bash(taskkill /F /IM electron.exe)",
       "PowerShell(Stop-Process -Name electron -Force -ErrorAction SilentlyContinue)",
       "Bash(rm \"c:/Users/schel/Documents/Development/Label Mangement/part-label-printer/_test3.js\")",
-      "Bash(git restore *)"
+      "Bash(git restore *)",
+      "Bash(npm start *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(ELECTRON_ENABLE_LOGGING=1 npm start)",
+      "PowerShell(Get-Command electron -ErrorAction SilentlyContinue)",
+      "Bash(cp 'c:\\\\Users\\\\Rschell\\\\OneDrive - L.A. King, LLC\\\\Desktop\\\\VSCode\\\\label_manager\\\\part-label-printer\\\\node_modules\\\\electron\\\\index.js' /tmp/electron_index_backup.js)",
+      "Bash(ELECTRON_FORCE_DOWNLOAD=true npm install electron@30.5.1)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }
